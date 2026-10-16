@@ -7,42 +7,49 @@
 ## 🏛️ System Architecture
 
 ```mermaid
-graph TD
-    subgraph "Clients (Vanilla JS + Tailwind CSS)"
-        A[Customer Menu · index.html]
-        B[Staff Operations Console · staff.html<br/>Floor Plan · Waiter Pad · Kitchen KDS · Cashier]
-        C[Admin Management Portal · admin.html<br/>Menu CRUD · Direct Cloud Upload · Sales Analytics]
+flowchart TD
+    subgraph Clients ["Clients (Vanilla JS + Tailwind CSS)"]
+        A["Customer Menu · index.html"]
+        B["Staff Console · staff.html<br/>Floor Plan · Waiter Pad · KDS · Cashier"]
+        C["Admin Portal · admin.html<br/>Menu CRUD · Direct Cloud Upload · Analytics"]
     end
 
-    subgraph "Security & Middleware Layer"
-        D[Rate Limiting<br/>express-rate-limit]
-        E[Security Headers<br/>Helmet.js]
-        F[Authentication & RBAC<br/>JWT + HMAC-SHA256]
-        G[Global Error Handler<br/>Masked 500s in Production]
+    subgraph Security ["Security & Middleware Layer"]
+        D["Rate Limiting & Security Headers<br/>express-rate-limit · Helmet.js"]
+        F["Authentication & RBAC<br/>JWT + HMAC-SHA256"]
     end
 
-    subgraph "Backend API (Express 5.x)"
-        H[/api/auth]
-        I[/api/meals]
-        J[/api/tables]
-        K[/api/orders]
-        L[/api/reports]
-        M[/api/uploads]
+    subgraph Backend ["Backend API (Express 5.x)"]
+        H["/api/auth"]
+        I["/api/meals"]
+        J["/api/tables"]
+        K["/api/orders"]
+        L["/api/reports"]
+        M["/api/uploads"]
     end
 
-    subgraph "Data & Cloud Infrastructure"
-        N[(MySQL Database<br/>Connection Pooling + ACID Transactions)]
-        O[ImageKit Cloud CDN<br/>Presigned Direct Browser Uploads]
+    subgraph Infrastructure ["Data & Cloud Infrastructure"]
+        N[("MySQL Database<br/>Connection Pooling + ACID Transactions")]
+        O["ImageKit Cloud CDN<br/>Direct Browser Media Streaming"]
     end
 
     A --> D
     B --> D
     C --> D
-    D --> E --> F
-    F --> H & I & J & K & L & M
-    H & I & J & K & L --> N
-    M -->|Generates Signed Voucher| C
-    C -->|Direct Binary Stream| O
+    D --> F
+    F --> H
+    F --> I
+    F --> J
+    F --> K
+    F --> L
+    F --> M
+    H --> N
+    I --> N
+    J --> N
+    K --> N
+    L --> N
+    M -.->|Presigned Token| C
+    C -->|Direct Upload| O
 ```
 
 ---
@@ -53,32 +60,32 @@ The relational database architecture is strictly normalized with foreign key int
 
 ```mermaid
 erDiagram
-    users ||--o{ orders : "places / manages"
+    users ||--o{ orders : "places"
     restaurant_tables ||--o{ orders : "seats"
     orders ||--|{ order_items : "contains"
-    meals ||--o{ order_items : "snapshot line item"
-    categories ||--o{ meals : "classifies"
+    meals ||--o{ order_items : "contains"
+    categories ||--o{ meals : "categorizes"
 
     users {
         int id PK
-        varchar username UK
-        varchar email UK
+        varchar username
+        varchar email
         varchar password_hash
-        enum role "admin, waiter, cashier, customer"
+        varchar role
         timestamp created_at
     }
 
     restaurant_tables {
         int id PK
-        varchar table_number UK
+        varchar table_number
         int capacity
-        enum status "available, occupied"
+        varchar status
         timestamp created_at
     }
 
     categories {
         int id PK
-        varchar name UK
+        varchar name
         timestamp created_at
     }
 
@@ -96,7 +103,7 @@ erDiagram
         int id PK
         int table_id FK
         int user_id FK
-        enum status "pending, preparing, served, paid, cancelled"
+        varchar status
         decimal total_price
         timestamp created_at
         timestamp updated_at
