@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+.env.local
+
+# Internal Notes & Mentorship Logs (Kept Local)
+AGENTS.md
+PROGRESS.md
+.agents/
+.postman/
+postman/
+
+# Test Artifacts & Temporary Files
+.playwright-mcp/
+scratch/
+
+# OS Temporary Files
+Thumbs.db
+.DS_Store

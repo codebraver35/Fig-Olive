@@ -1,0 +1,43 @@
+{
+  "name": "mytry",
+  "version": "1.0.0",
+  "description": "Fig & Olive Mediterranean Kitchen - Full-Stack Restaurant Management System",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "build": "npm run build:css",
+    "build:css": "tailwindcss -i ./frontend/src/input.css -o ./frontend/css/output.css --minify",
+    "dev": "concurrently \"node --watch app.js\" \"npm run watch:css\"",
+    "watch:css": "tailwindcss -i ./frontend/src/input.css -o ./frontend/css/output.css --watch",
+    "seed": "node scripts/seed.js",
+    "test": "node app.js"
+  },
+  "keywords": [
+    "express",
+    "nodejs",
+    "mysql",
+    "restaurant-management",
+    "full-stack"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "imagekit": "^6.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.24.4",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

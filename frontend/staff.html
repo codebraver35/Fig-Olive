@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fig & Olive · Staff Operations Console</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/output.css" />
+  </head>
+  <body class="bg-canvas text-ink font-sans antialiased min-h-screen flex flex-col">
+    
+    <!-- ============================================== -->
+    <!-- TOP CONSOLE BAR & IDENTITY                     -->
+    <!-- ============================================== -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-border shadow-xs">
+      <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        
+        <!-- Left: Brand & Station Badge -->
+        <div class="flex items-center gap-4">
+          <a href="/" class="flex items-center gap-3 group">
+            <img
+              src="assets/logo.jpg"
+              alt="Fig & Olive Seal"
+              class="w-9 h-9 rounded-full object-cover border border-stone-border shadow-xs"
+            />
+            <div>
+              <span class="font-serif font-bold text-base tracking-wide text-ink block leading-tight">
+                FIG & OLIVE
+              </span>
+              <span class="text-[10px] uppercase font-bold tracking-widest text-olive block">
+                Staff Operations
+              </span>
+            </div>
+          </a>
+
+          <div class="h-6 w-px bg-stone-border/80 hidden sm:block"></div>
+
+          <!-- Current Station Badge -->
+          <span
+            id="stationBadge"
+            class="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider rounded-full bg-olive/10 text-olive border border-olive/20"
+          >
+            Floor Station
+          </span>
+        </div>
+
+        <!-- Center: Station Navigation Tabs -->
+        <nav class="hidden md:flex items-center gap-1 bg-canvas/80 p-1 rounded-xl border border-stone-border/70">
+          <button
+            id="tabFloor"
+            onclick="switchStation('floor')"
+            class="px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-white text-olive shadow-xs"
+          >
+            🍽️ Floor Plan
+          </button>
+          <button
+            id="tabKitchen"
+            onclick="switchStation('kitchen')"
+            class="px-4 py-1.5 text-xs font-semibold rounded-lg text-ink-muted hover:text-ink transition-all cursor-pointer"
+          >
+            🔥 Kitchen KDS
+          </button>
+          <button
+            id="tabCashier"
+            onclick="switchStation('cashier')"
+            class="px-4 py-1.5 text-xs font-semibold rounded-lg text-ink-muted hover:text-ink transition-all cursor-pointer"
+          >
+            💳 Cashier Billing
+          </button>
+        </nav>
+
+        <!-- Right: Staff Profile & Sign Out -->
+        <div class="flex items-center gap-3">
+          <!-- Admin Portal Link (Visible to Admins) -->
+          <a
+            id="linkAdminPortal"
+            href="/admin.html"
+            class="hidden px-3 py-1.5 rounded-xl text-xs font-bold bg-wine-tint hover:bg-wine/20 text-wine border border-wine/20 transition-all items-center gap-1.5"
+          >
+            <span>⚙️</span> Admin Console ➔
+          </a>
+
+          <!-- Public Menu Shortcut -->
+          <a
+            href="/"
+            class="text-xs font-semibold text-ink-muted hover:text-olive transition-colors hidden sm:inline-flex items-center gap-1"
+          >
+            Public Menu ↗
+          </a>
+
+          <div class="flex items-center gap-3 pl-3 border-l border-stone-border">
+            <div class="text-right hidden sm:block">
+              <span id="staffUsername" class="text-xs font-bold text-ink block leading-tight">Staff Member</span>
+              <span id="staffRole" class="text-[10px] font-bold uppercase tracking-wider text-ink-muted">WAITER</span>
+            </div>
+
+            <button
+              onclick="logout()"
+              class="px-3 py-1.5 text-xs font-semibold text-terracotta hover:bg-terracotta/10 border border-terracotta/20 rounded-xl transition-all cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Mobile Tab Bar -->
+      <div class="flex md:hidden border-t border-stone-border/60 px-4 py-2 bg-canvas/40 justify-around items-center">
+        <button onclick="switchStation('floor')" class="text-xs font-bold text-olive">🍽️ Floor</button>
+        <button onclick="switchStation('kitchen')" class="text-xs font-semibold text-ink-muted">🔥 Kitchen</button>
+        <button onclick="switchStation('cashier')" class="text-xs font-semibold text-ink-muted">💳 Cashier</button>
+        <a href="/" class="text-xs font-semibold text-ink-muted hover:text-olive">📖 Menu ↗</a>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- MAIN WORKSPACE CONTENT                         -->
+    <!-- ============================================== -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col gap-6">
+
+      <!-- ============================================== -->
+      <!-- STATION 1: FLOOR PLAN & TABLE ORDERS           -->
+      <!-- ============================================== -->
+      <section id="stationFloor" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Floor Plan Matrix (2 Columns on Desktop) -->
+        <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-stone-border shadow-xs flex flex-col gap-5">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-border/60 pb-4">
+            <div>
+              <h2 class="font-serif text-xl font-bold text-ink">Dining Room Floor Plan</h2>
+              <p class="text-xs text-ink-muted mt-0.5">Select a table to open a ticket or view its live order state.</p>
+            </div>
+
+            <!-- Legend Status Pills -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-ink-muted">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Available
+              </span>
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-ink-muted">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Occupied
+              </span>
+              <button
+                onclick="fetchTables()"
+                class="ml-2 text-xs font-semibold text-olive hover:underline cursor-pointer"
+                title="Refresh Table States"
+              >
+                ↻ Refresh
+              </button>
+            </div>
+          </div>
+
+          <!-- Tables Grid (Populated dynamically from MySQL) -->
+          <div id="tablesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <div class="col-span-full py-12 text-center text-ink-muted text-xs">
+              Loading floor plan from database...
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Active Table Order Drawer -->
+        <div class="bg-white rounded-3xl p-6 border border-stone-border shadow-xs flex flex-col justify-between gap-6">
+          
+          <div>
+            <div class="flex items-center justify-between border-b border-stone-border/60 pb-3">
+              <div>
+                <h3 id="panelTableTitle" class="font-serif text-lg font-bold text-ink">Table --</h3>
+                <span id="panelTableSub" class="text-xs text-ink-muted">Select a table to view ticket</span>
+              </div>
+              <span id="panelTableBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-canvas border border-stone-border text-ink-subtle">
+                --
+              </span>
+            </div>
+
+            <!-- Active Order Items List -->
+            <div class="mt-4 flex flex-col gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle block">Ordered Dishes</span>
+              <div id="panelOrderItems" class="flex flex-col gap-2 min-h-36 max-h-64 overflow-y-auto">
+                <p class="text-xs text-ink-muted italic py-6 text-center">No active table selected.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total & Actions -->
+          <div class="pt-4 border-t border-stone-border flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-ink-subtle uppercase tracking-wider">Estimated Total</span>
+              <span id="panelOrderTotal" class="font-serif text-xl font-bold text-ink">$0.00</span>
+            </div>
+
+            <!-- Waiter Action: Place / Add Dishes -->
+            <button
+              id="btnAddDishes"
+              onclick="openOrderModal()"
+              disabled
+              class="w-full py-2.5 bg-olive hover:bg-olive-hover disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer text-center"
+            >
+              + Place New Order
+            </button>
+
+            <!-- Table Status Toggle (Mark Available if empty) -->
+            <button
+              id="btnFreeTable"
+              onclick="releaseActiveTable()"
+              disabled
+              class="w-full py-2 bg-canvas hover:bg-stone-border/40 disabled:opacity-40 disabled:cursor-not-allowed text-ink text-xs font-semibold rounded-xl border border-stone-border transition-all cursor-pointer"
+            >
+              Clear / Free Table
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- STATION 2: KITCHEN KDS KANBAN                  -->
+      <!-- ============================================== -->
+      <section id="stationKitchen" class="hidden flex-col gap-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-serif text-xl font-bold text-ink">Kitchen Display System (KDS)</h2>
+            <p class="text-xs text-ink-muted">Live orders advancing through kitchen ticket states.</p>
+          </div>
+          <button onclick="fetchKitchenOrders()" class="text-xs font-semibold text-olive hover:underline cursor-pointer">
+            ↻ Refresh Tickets
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Column 1: Received / Pending -->
+          <div class="bg-white rounded-3xl p-5 border border-amber-200/80 shadow-xs flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-border/60">
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-600 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Received / Queue
+              </span>
+              <span id="countPending" class="px-2 py-0.5 bg-amber-50 rounded-full text-[10px] font-bold text-amber-700">0</span>
+            </div>
+            <div id="colPending" class="flex flex-col gap-3 min-h-64">
+              <!-- Dynamically rendered ticket cards -->
+            </div>
+          </div>
+
+          <!-- Column 2: In Cooking / Preparing -->
+          <div class="bg-white rounded-3xl p-5 border border-orange-200/80 shadow-xs flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-border/60">
+              <span class="text-xs font-bold uppercase tracking-wider text-orange-600 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span> In Cooking / Fire
+              </span>
+              <span id="countPreparing" class="px-2 py-0.5 bg-orange-50 rounded-full text-[10px] font-bold text-orange-700">0</span>
+            </div>
+            <div id="colPreparing" class="flex flex-col gap-3 min-h-64">
+              <!-- Dynamically rendered ticket cards -->
+            </div>
+          </div>
+
+          <!-- Column 3: Ready to Serve -->
+          <div class="bg-white rounded-3xl p-5 border border-emerald-200/80 shadow-xs flex flex-col gap-4">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-border/60">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Ready for Runner
+              </span>
+              <span id="countServed" class="px-2 py-0.5 bg-emerald-50 rounded-full text-[10px] font-bold text-emerald-700">0</span>
+            </div>
+            <div id="colServed" class="flex flex-col gap-3 min-h-64">
+              <!-- Dynamically rendered ticket cards -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- STATION 3: CASHIER BILLING & SETTLEMENT        -->
+      <!-- ============================================== -->
+      <section id="stationCashier" class="hidden flex-col gap-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="font-serif text-xl font-bold text-ink">Cashier Checkout & Settlement</h2>
+            <p class="text-xs text-ink-muted">Served dining sessions ready for payment settlement and table release.</p>
+          </div>
+          <button onclick="fetchCashierOrders()" class="text-xs font-semibold text-olive hover:underline cursor-pointer">
+            ↻ Refresh Bills
+          </button>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-stone-border shadow-xs overflow-hidden">
+          <table class="w-full text-left text-xs text-ink">
+            <thead class="bg-canvas/60 border-b border-stone-border uppercase text-[10px] font-bold tracking-wider text-ink-muted">
+              <tr>
+                <th class="py-3.5 px-4">Order #</th>
+                <th class="py-3.5 px-4">Table</th>
+                <th class="py-3.5 px-4">Server</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4">Total Amount</th>
+                <th class="py-3.5 px-4 text-right">Settlement</th>
+              </tr>
+            </thead>
+            <tbody id="cashierTableBody" class="divide-y divide-stone-border/60">
+              <tr>
+                <td colspan="6" class="py-8 text-center text-ink-muted">Loading active bills...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ============================================== -->
+    <!-- WAITER ORDER PAD MODAL (ACID TRANSACTION)      -->
+    <!-- ============================================== -->
+    <div id="orderModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      <div class="relative w-full max-w-xl bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-border">
+        
+        <div class="px-6 py-4 border-b border-stone-border flex items-center justify-between bg-canvas/40">
+          <div>
+            <h3 class="font-serif text-lg font-bold text-ink" id="orderModalTitle">Open Order: Table T-01</h3>
+            <span id="orderModalSub" class="text-xs text-ink-muted">Select dishes from menu catalog to send to kitchen</span>
+          </div>
+          <button onclick="closeOrderModal()" class="w-8 h-8 rounded-full hover:bg-stone-border/30 flex items-center justify-center font-bold text-ink-muted transition-all cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <div class="p-6 flex flex-col gap-4 max-h-[70vh] overflow-y-auto">
+          <div id="menuPickerList" class="flex flex-col gap-3">
+            <p class="text-xs text-ink-muted">Loading menu items...</p>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-stone-border bg-canvas/30 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle block">Order Subtotal</span>
+            <span id="orderModalSubtotal" class="font-serif text-lg font-bold text-ink">$0.00</span>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button onclick="closeOrderModal()" class="px-4 py-2 text-xs font-semibold text-ink-muted hover:text-ink cursor-pointer">
+              Cancel
+            </button>
+            <button id="btnSubmitOrder" onclick="submitNewOrder()" class="px-5 py-2.5 bg-olive hover:bg-olive-hover text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer">
+              Transmit Ticket to Kitchen ➔
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Staff Workspace Controller Script -->
+    <script src="js/staff.js"></script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fig & Olive · Staff & Guest Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/output.css" />
+  </head>
+  <body class="bg-canvas text-ink font-sans antialiased min-h-screen flex flex-col justify-between">
+    
+    <!-- Top Minimal Navigation -->
+    <header class="py-6 px-8 max-w-7xl mx-auto w-full flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 group">
+        <img
+          src="assets/logo.jpg"
+          alt="Fig & Olive Seal"
+          class="w-10 h-10 rounded-full object-cover border border-stone-border shadow-sm group-hover:scale-105 transition-transform"
+        />
+        <div>
+          <span class="font-serif text-lg font-bold tracking-tight text-ink block leading-none">Fig & Olive</span>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-terracotta">Mediterranean Kitchen</span>
+        </div>
+      </a>
+      <a href="/" class="text-xs font-semibold text-ink-muted hover:text-olive transition-colors flex items-center gap-1">
+        <span>←</span>
+        <span>Return to Guest Menu</span>
+      </a>
+    </header>
+
+    <!-- Main Login Card Container -->
+    <main class="flex-1 flex items-center justify-center p-6">
+      <div class="w-full max-w-md bg-white border border-stone-border rounded-3xl p-8 md:p-10 shadow-xl shadow-stone-900/5 relative overflow-hidden">
+        
+        <!-- Decorative Provenance Accent -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-olive via-terracotta to-wine"></div>
+
+        <div class="text-center mb-8">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-terracotta block mb-1">Authenticated Access</span>
+          <h1 class="font-serif text-2xl md:text-3xl font-bold text-ink">Sign In to Bistro Portal</h1>
+          <p class="text-xs text-ink-muted mt-2">Enter your credentials to access operations or kitchen administration.</p>
+        </div>
+
+        <!-- Alert Notification Banner (Hidden by default) -->
+        <div id="errorAlert" class="hidden mb-6 p-3.5 rounded-xl bg-terracotta/10 border border-terracotta/20 text-terracotta text-xs font-medium text-center">
+          Invalid email or password.
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="flex flex-col gap-5">
+          <!-- Username: Hidden during Sign In, shown during Sign Up -->
+          <div id="usernameGroup" class="hidden">
+            <label for="username" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1.5">Full Name / Username</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="e.g. Elena Rostova"
+              class="w-full px-4 py-3 bg-canvas/50 border border-stone-border rounded-xl text-sm text-ink outline-none focus:border-olive focus:ring-2 focus:ring-olive/15 transition-all shadow-sm"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1.5">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              required
+              placeholder="e.g. admin@restaurant.com"
+              class="w-full px-4 py-3 bg-canvas/50 border border-stone-border rounded-xl text-sm text-ink outline-none focus:border-olive focus:ring-2 focus:ring-olive/15 transition-all shadow-sm"
+            />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="password" class="text-xs font-bold text-ink uppercase tracking-wider">Password</label>
+              <span id="passHint" class="text-[11px] text-ink-subtle">Default: password123</span>
+            </div>
+            <input
+              type="password"
+              id="password"
+              required
+              placeholder="••••••••••••"
+              class="w-full px-4 py-3 bg-canvas/50 border border-stone-border rounded-xl text-sm text-ink outline-none focus:border-olive focus:ring-2 focus:ring-olive/15 transition-all shadow-sm"
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            id="loginBtn"
+            class="w-full mt-2 py-3.5 px-6 bg-olive hover:bg-olive-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md shadow-olive/20 transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <span id="btnText">Sign In to Bistro</span>
+            <span id="btnSpinner" class="hidden animate-spin">◌</span>
+          </button>
+
+          <!-- Toggle link -->
+          <p class="text-center text-xs text-ink-muted mt-1">
+            <span id="toggleText">Don't have an account?</span>
+            <button
+              type="button"
+              id="toggleBtn"
+              onclick="toggleAuthMode()"
+              class="font-bold text-olive hover:underline ml-1 cursor-pointer"
+            >
+              Create an account
+            </button>
+          </p>
+
+          <!-- 1-Click Fast Demo Credentials -->
+          <div class="mt-4 pt-4 border-t border-stone-border/60">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ink-muted block text-center mb-2">Quick Demo Access</span>
+            <div class="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onclick="fillDemoCredentials('admin')"
+                class="px-2 py-1.5 rounded-lg border border-wine/20 bg-wine-tint text-wine hover:bg-wine/15 text-[11px] font-bold transition-all text-center cursor-pointer shadow-2xs"
+              >
+                👑 Admin
+              </button>
+              <button
+                type="button"
+                onclick="fillDemoCredentials('waiter')"
+                class="px-2 py-1.5 rounded-lg border border-olive/20 bg-olive/10 text-olive hover:bg-olive/20 text-[11px] font-bold transition-all text-center cursor-pointer shadow-2xs"
+              >
+                🍽️ Waiter
+              </button>
+              <button
+                type="button"
+                onclick="fillDemoCredentials('cashier')"
+                class="px-2 py-1.5 rounded-lg border border-terracotta/20 bg-terracotta/10 text-terracotta hover:bg-terracotta/20 text-[11px] font-bold transition-all text-center cursor-pointer shadow-2xs"
+              >
+                💳 Cashier
+              </button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-ink-subtle">
+      Fig & Olive Bistro System · Secure JWT Session Architecture
+    </footer>
+
+    <script src="js/auth.js"></script>
+  </body>
+</html>

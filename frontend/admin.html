@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fig & Olive · Admin Meal Management</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/output.css" />
+  </head>
+  <body class="bg-canvas text-ink font-sans antialiased min-h-screen flex flex-col">
+    
+    <!-- Top Admin Header -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-border">
+      <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
+        
+        <!-- Left: Brand & Admin Badge -->
+        <div class="flex items-center gap-4">
+          <a href="/" class="flex items-center gap-3 group">
+            <img
+              src="assets/logo.jpg"
+              alt="Fig & Olive Seal"
+              class="w-10 h-10 rounded-full object-cover border border-stone-border shadow-sm"
+            />
+            <div>
+              <span class="font-serif text-lg font-bold tracking-tight text-ink block leading-none">Fig & Olive</span>
+              <span class="text-[10px] uppercase font-bold tracking-widest text-terracotta">Hearth & Kitchen</span>
+            </div>
+          </a>
+          <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-wine-tint text-wine border border-wine/20">
+            <span>●</span> Admin Console
+          </span>
+        </div>
+
+        <!-- Right: Session & Navigation -->
+        <div class="flex items-center gap-3">
+          <a
+            href="/staff.html"
+            class="px-3 py-1.5 rounded-xl text-xs font-bold bg-olive/10 hover:bg-olive/20 text-olive border border-olive/20 transition-all flex items-center gap-1.5"
+          >
+            <span>🍽️</span> Staff Console ➔
+          </a>
+
+          <a
+            href="/"
+            class="text-xs font-semibold text-ink-muted hover:text-olive transition-colors hidden sm:inline-flex items-center gap-1"
+          >
+            Public Menu ↗
+          </a>
+
+          <div class="flex items-center gap-3 pl-3 border-l border-stone-border">
+            <div class="text-right hidden sm:block">
+              <span id="adminUsername" class="text-xs font-bold text-ink block leading-tight">Administrator</span>
+              <span id="adminRole" class="text-[10px] font-bold uppercase tracking-wider text-ink-muted">ADMIN</span>
+            </div>
+            <button
+              onclick="logout()"
+              class="px-3 py-1.5 text-xs font-semibold text-terracotta hover:bg-terracotta/10 border border-terracotta/20 rounded-xl transition-all cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-6 py-8">
+      
+      <!-- Top Section: Title & Actions -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-terracotta block mb-1">Database Administration</span>
+          <h1 class="font-serif text-3xl font-bold text-ink">Culinary Menu Catalog</h1>
+          <p class="text-xs text-ink-muted mt-1">Manage kitchen recipes, pricing, and live availability across the restaurant.</p>
+        </div>
+
+        <!-- Add Dish CTA Button -->
+        <button
+          onclick="openMealModal()"
+          class="inline-flex items-center gap-2 px-5 py-2.5 bg-olive hover:bg-olive-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all duration-150 cursor-pointer self-start sm:self-auto"
+        >
+          <span class="text-sm font-bold">+</span>
+          <span>Add New Dish</span>
+        </button>
+      </div>
+
+      <!-- Analytics Header & Time Period Filter -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h2 class="font-serif text-lg font-bold text-ink">Executive Revenue & Sales Analytics</h2>
+          <p class="text-xs text-ink-muted">Live performance computed directly from order transactions.</p>
+        </div>
+
+        <!-- Period Filter Selector -->
+        <div class="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-2xl border border-stone-border shadow-xs self-start sm:self-auto">
+          <label for="analyticsPeriod" class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle">Period:</label>
+          <select
+            id="analyticsPeriod"
+            onchange="fetchAdminAnalytics(this.value)"
+            class="bg-transparent text-xs font-bold text-olive outline-none cursor-pointer"
+          >
+            <option value="all" selected>All Time</option>
+            <option value="24h">Last 24 Hours</option>
+            <option value="week">Last 7 Days</option>
+            <option value="month">Last 30 Days</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Executive KPI Analytics Grid (GET /api/reports/sales) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <!-- KPI 1: Total Settled Revenue -->
+        <div class="bg-white rounded-3xl p-5 border border-stone-border shadow-xs flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center text-xl shrink-0">
+            💰
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle block">Settled Revenue</span>
+            <span id="kpiRevenue" class="font-serif text-2xl font-bold text-ink leading-tight">$0.00</span>
+            <span id="kpiRevenueSub" class="text-[10px] text-ink-muted block mt-0.5">All-time paid dining tickets</span>
+          </div>
+        </div>
+
+        <!-- KPI 2: Paid Dining Sessions -->
+        <div class="bg-white rounded-3xl p-5 border border-stone-border shadow-xs flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-olive/10 text-olive border border-olive/20 flex items-center justify-center text-xl shrink-0">
+            🧾
+          </div>
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle block">Paid Sessions</span>
+            <span id="kpiOrdersCount" class="font-serif text-2xl font-bold text-ink leading-tight">0</span>
+            <span id="kpiCountSub" class="text-[10px] text-ink-muted block mt-0.5">Completed guest orders</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: #1 Best Selling Dish -->
+        <div class="bg-white rounded-3xl p-5 border border-stone-border shadow-xs flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center text-xl shrink-0">
+            🏆
+          </div>
+          <div class="min-w-0">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-ink-subtle block">Top Selling Dish</span>
+            <span id="kpiTopDish" class="font-serif text-lg font-bold text-ink truncate block leading-tight">Loading...</span>
+            <span id="kpiTopDishMeta" class="text-[10px] text-ink-muted block mt-0.5">0 dishes sold</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Meals Table Card -->
+      <div class="bg-white border border-stone-border rounded-2xl overflow-hidden shadow-sm">
+        
+        <!-- Table Search Bar -->
+        <div class="p-4 border-b border-stone-border/60 bg-surface/30 flex items-center justify-between">
+          <div class="relative w-full max-w-xs">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-ink-subtle text-xs">🔍</span>
+            <input
+              type="text"
+              id="adminSearch"
+              oninput="filterAdminMeals()"
+              placeholder="Filter dishes..."
+              class="w-full pl-8 pr-3 py-1.5 bg-white border border-stone-border rounded-lg text-xs text-ink outline-none focus:border-olive focus:ring-1 focus:ring-olive/20 transition-all"
+            />
+          </div>
+          <span id="dishCount" class="text-xs font-semibold text-ink-muted">Loading dishes...</span>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-stone-border bg-canvas/40 text-[11px] uppercase tracking-wider font-bold text-ink-muted">
+                <th class="py-3 px-4">Dish</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Price</th>
+                <th class="py-3 px-4">Description</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="mealsTableBody" class="divide-y divide-stone-border/40 text-xs text-ink">
+              <!-- Dynamically populated by admin.js -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- CREATE / EDIT MEAL MODAL                       -->
+    <!-- ============================================== -->
+    <div id="mealFormModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-all">
+      <div class="relative w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl border border-stone-border">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-stone-border flex items-center justify-between bg-canvas/40">
+          <h3 id="modalFormTitle" class="font-serif text-lg font-bold text-ink">Add New Dish</h3>
+          <button onclick="closeMealModal()" class="w-8 h-8 rounded-full hover:bg-stone-border/30 flex items-center justify-center text-sm font-bold text-ink-muted transition-all cursor-pointer">
+            ✕
+          </button>
+        </div>
+
+        <!-- Form Body -->
+        <form id="mealForm" onsubmit="handleMealSubmit(event)" class="p-6 flex flex-col gap-4">
+          <input type="hidden" id="editMealId" value="">
+
+          <!-- Name -->
+          <div>
+            <label for="formName" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1">Dish Name</label>
+            <input
+              type="text"
+              id="formName"
+              required
+              placeholder="e.g. Truffle Tagliatelle"
+              class="w-full px-3.5 py-2.5 bg-canvas/50 border border-stone-border rounded-xl text-xs text-ink outline-none focus:border-olive focus:ring-1 focus:ring-olive/20 transition-all"
+            />
+          </div>
+
+          <!-- Category & Price in 2 Columns -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="formCategory" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1">Category</label>
+              <select
+                id="formCategory"
+                required
+                class="w-full px-3.5 py-2.5 bg-canvas/50 border border-stone-border rounded-xl text-xs text-ink outline-none focus:border-olive focus:ring-1 focus:ring-olive/20 transition-all cursor-pointer"
+              >
+                <option value="1">Pasta</option>
+                <option value="2">Salad</option>
+                <option value="3">Pizza</option>
+              </select>
+            </div>
+            <div>
+              <label for="formPrice" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1">Price ($ USD)</label>
+              <input
+                type="number"
+                id="formPrice"
+                step="0.01"
+                min="0.50"
+                required
+                placeholder="18.50"
+                class="w-full px-3.5 py-2.5 bg-canvas/50 border border-stone-border rounded-xl text-xs text-ink outline-none focus:border-olive focus:ring-1 focus:ring-olive/20 transition-all"
+              />
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label for="formDescription" class="text-xs font-bold text-ink uppercase tracking-wider block mb-1">Culinary Description</label>
+            <textarea
+              id="formDescription"
+              rows="3"
+              required
+              placeholder="Describe the preparation, heritage ingredients, and culinary story..."
+              class="w-full px-3.5 py-2.5 bg-canvas/50 border border-stone-border rounded-xl text-xs text-ink outline-none focus:border-olive focus:ring-1 focus:ring-olive/20 transition-all resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Dish Photo Upload (ImageKit) -->
+          <div>
+            <label class="text-xs font-bold text-ink uppercase tracking-wider block mb-1">Dish Photography (Optional)</label>
+            <div class="flex items-center gap-4">
+              <!-- Preview thumbnail -->
+              <div id="imagePreviewContainer" class="w-16 h-16 rounded-xl border border-stone-border/80 bg-canvas/60 overflow-hidden flex items-center justify-center shrink-0">
+                <img id="formImagePreview" src="" alt="Dish preview" class="w-full h-full object-cover hidden">
+                <span id="previewPlaceholder" class="text-xl text-ink-subtle">📷</span>
+              </div>
+
+              <!-- File Input & Hint -->
+              <div class="flex-1">
+                <input
+                  type="file"
+                  id="formImage"
+                  accept="image/jpeg,image/png,image/webp"
+                  onchange="handleImagePreview(event)"
+                  class="block w-full text-xs text-ink-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-olive/10 file:text-olive hover:file:bg-olive/20 cursor-pointer"
+                />
+                <p class="text-[11px] text-ink-muted mt-1">Direct upload to ImageKit CDN (JPG, PNG, or WebP).</p>
+              </div>
+            </div>
+            <!-- Hidden input to preserve existing image URL when editing without uploading a new photo -->
+            <input type="hidden" id="formExistingImageUrl" value="">
+          </div>
+
+          <!-- Modal Footer CTA -->
+          <div class="pt-4 border-t border-stone-border flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeMealModal()"
+              class="px-4 py-2 text-xs font-semibold text-ink-muted hover:text-ink transition-all cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              id="submitMealBtn"
+              class="px-5 py-2.5 bg-olive hover:bg-olive-hover text-white text-xs font-bold rounded-xl shadow-sm transition-all cursor-pointer"
+            >
+              Save Dish to Menu
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+
+    <!-- Admin Controller Script -->
+    <script src="js/admin.js"></script>
+  </body>
+</html>

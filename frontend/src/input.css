@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-olive: #425437;
+  --color-olive-hover: #33422A;
+  --color-olive-tint: #edf3e9;
+  --color-ink: #1a1715;
+  --color-ink-muted: #635d56;
+  --color-ink-subtle: #8c827a;
+  --color-wine: #622D3E;
+  --color-wine-hover: #4E2230;
+  --color-wine-tint: #fbebee;
+  --color-terracotta: #B0633E;
+  --color-terracotta-hover: #8e4c2c;
+  --color-terracotta-tint: #fdf2ec;
+  --color-canvas: #f7f4ed;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fdfcf9;
+  --color-stone-border: #e5dfd3;
+
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+}
