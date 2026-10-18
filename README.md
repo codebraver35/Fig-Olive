@@ -283,16 +283,6 @@ This project is 100% production-ready for deployment on **Render**, **Railway**,
 
 ---
 
-## 📝 CV / Resume Project Description (Ready to Copy)
-
-**Full-Stack Restaurant Management System (Fig & Olive)** · *Node.js, Express, MySQL, Vanilla JS, Tailwind CSS*
-* Engineered a full-stack restaurant operations platform supporting Customer Menu, Waiter Order Taking, Kitchen Kanban (KDS), Cashier Settlement, and Executive Analytics.
-* Architected a normalized MySQL relational schema featuring snapshot pricing, `CASCADE`/`RESTRICT` constraints, and multi-table ACID transactions for order placement and table synchronization.
-* Implemented secure stateless authentication using JWT and Bcrypt password salts, protected by Role-Based Access Control (RBAC) and IP rate-limiting middleware.
-* Built a direct client-to-cloud media upload pipeline using ImageKit presigned cryptographic vouchers, eliminating server memory overhead during high-resolution image uploads.
-* Developed a responsive, dependency-free frontend using modern Vanilla JavaScript (ES Modules, DOM API) and Tailwind CSS, prioritizing performance and clean architectural separation.
-
----
 
 ## 📄 License
 This project is open-source and available under the [ISC License](LICENSE).
