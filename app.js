@@ -10,6 +10,7 @@ import tableRouter from './Routers/tables.js';
 import orderRouter from './Routers/orders.js'
 import reportRouter from './Routers/report.js'
 import uploadRouter from './Routers/upload.js';
+import pool from './config/db.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -30,13 +31,26 @@ const Port = process.env.PORT || 8000;
 // Body parser middleware: Allows us to read raw JSON from req.body
 app.use(express.json());
 
-// Cloud Deployment Health Check Endpoint
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime()
-    });
+// Cloud Deployment Health & Database Keep-Alive Check
+app.get('/health', async (req, res) => {
+    try {
+        // Execute a fast 1ms query to test database connectivity and keep cloud MySQL active
+        await pool.query('SELECT 1');
+        res.status(200).json({
+            status: 'healthy',
+            database: 'connected',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime()
+        });
+    } catch (err) {
+        // Return 503 so Uptime monitors immediately detect database failure
+        res.status(503).json({
+            status: 'unhealthy',
+            database: 'disconnected',
+            error: err.message,
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 // Serve static frontend files from 'frontend' directory
