@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "build": "npm run build:css",
-    "build:css": "tailwindcss -i ./frontend/src/input.css -o ./frontend/css/output.css --minify",
+    "build:css": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./frontend/src/input.css -o ./frontend/css/output.css --minify",
     "dev": "concurrently \"node --watch app.js\" \"npm run watch:css\"",
-    "watch:css": "tailwindcss -i ./frontend/src/input.css -o ./frontend/css/output.css --watch",
+    "watch:css": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./frontend/src/input.css -o ./frontend/css/output.css --watch",
     "seed": "node scripts/seed.js",
     "test": "node app.js"
   },

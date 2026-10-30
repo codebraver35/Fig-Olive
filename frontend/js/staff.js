@@ -82,8 +82,8 @@ window.switchStation = function(station) {
   const tabKitchen = document.getElementById('tabKitchen');
   const tabCashier = document.getElementById('tabCashier');
 
-  const defaultTabClass = 'px-4 py-1.5 text-xs font-semibold rounded-lg text-ink-muted hover:text-ink transition-all cursor-pointer';
-  const activeTabClass = 'px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-white text-olive shadow-xs';
+  const defaultTabClass = 'flex-1 md:flex-initial px-2.5 sm:px-4 py-1.5 text-xs font-semibold rounded-lg text-ink-muted hover:text-ink transition-all cursor-pointer text-center whitespace-nowrap';
+  const activeTabClass = 'flex-1 md:flex-initial px-2.5 sm:px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer bg-white text-olive shadow-xs text-center whitespace-nowrap';
 
   tabFloor.className = defaultTabClass;
   tabKitchen.className = defaultTabClass;
@@ -770,24 +770,28 @@ window.fetchCashierOrders = async function() {
       const isServed = order.status === 'served';
 
       const statusBadge = isServed
-        ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Served (Ready to Bill)</span>'
-        : `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">${order.status}</span>`;
+        ? '<span class="px-1.5 sm:px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-bold uppercase tracking-normal sm:tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap"><span class="inline sm:hidden">Served</span><span class="hidden sm:inline">Served (Ready to Bill)</span></span>'
+        : `<span class="px-1.5 sm:px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-bold uppercase tracking-normal sm:tracking-wider bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">${order.status}</span>`;
 
       return `
         <tr class="hover:bg-canvas/40 transition-colors">
-          <td class="py-3 px-4 font-bold text-ink">#${order.id}</td>
-          <td class="py-3 px-4">
-            <span class="font-bold text-ink">Table ${order.table_number}</span>
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4 font-bold text-ink whitespace-nowrap">#${order.id}</td>
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4">
+            <span class="font-bold text-ink block whitespace-nowrap">Table ${order.table_number}</span>
+            <span class="text-[10px] text-ink-muted block sm:hidden truncate max-w-16 sm:max-w-none" title="By ${order.staff_name || 'Waiter'}">By ${order.staff_name || 'Waiter'}</span>
           </td>
-          <td class="py-3 px-4 text-ink-muted">${order.staff_name || 'Waiter'}</td>
-          <td class="py-3 px-4">${statusBadge}</td>
-          <td class="py-3 px-4 font-serif font-bold text-base text-ink">$${totalFormatted}</td>
-          <td class="py-3 px-4 text-right">
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4 text-ink-muted whitespace-nowrap hidden sm:table-cell">${order.staff_name || 'Waiter'}</td>
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4 whitespace-nowrap">${statusBadge}</td>
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4 font-serif font-bold text-sm sm:text-base text-ink whitespace-nowrap">$${totalFormatted}</td>
+          <td class="py-2.5 px-1 sm:py-3 sm:px-4 text-right whitespace-nowrap">
             <button
               onclick="settleOrder(${order.id}, '${order.table_number}', '${totalFormatted}')"
-              class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+              title="Collect $${totalFormatted} & Settle Bill"
+              aria-label="Collect $${totalFormatted} & Settle Bill"
+              class="px-2 sm:px-4 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer whitespace-nowrap"
             >
-              Collect $${totalFormatted} & Settle Bill 💳
+              <span class="inline sm:hidden">Collect</span>
+              <span class="hidden sm:inline">Collect $${totalFormatted} & Settle Bill 💳</span>
             </button>
           </td>
         </tr>
